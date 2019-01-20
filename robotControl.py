@@ -6,6 +6,7 @@ import time
 import serial
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+plt.style.use('seaborn-whitegrid')
 from mpl_toolkits.mplot3d import axes3d
 
 def unit(vector):
@@ -72,6 +73,9 @@ class Arm:
 
     # De z-as van de robot.
     self.zAngle = 0
+
+    # Het einpunt van de robot. Op dit moment leeg.
+    self.endpoint = np.array([False, False])
 
   """ Voeg een nieuw segment toe aan de keten. Geef bij deze functie de lengte van de segment en welke hoek hij heeft. """
   def addSegment(self, length, angle):
@@ -279,17 +283,18 @@ class Arm:
 
   def plt2D(self, save=False, name="graph"):
       # Plot arm.
-      for segment in self.segments:
-        plt.plot([segment.v[0]], [segment.v[1]], 'ro')
-        plt.text(segment.v[0], segment.v[1] + 1, '(x:{}, y:{})'.format(int(segment.v[0]), int(segment.v[1])))
+      for i in range(len(self.segments)):
+        plt.plot([self.segments[i].v[0]], [self.segments[i].v[1]], 'ro')
+        plt.text(self.segments[i].v[0], self.segments[i].v[1] + 1, '(x:{}, y:{})'.format(int(self.segments[i].v[0]), int(self.segments[i].v[1])))
 
       # Startpunt
       plt.plot([self.beginpoint[0]], [self.beginpoint[1]], 'bo')
       plt.text(self.beginpoint[0], self.beginpoint[1], 'Startpunt')
 
-      # Eindpunt
-      plt.plot([self.endpoint[0]], [self.endpoint[1]], 'yo')
-      plt.text(self.endpoint[0], self.endpoint[1] + 20, 'Eindpunt')
+      if np.any(self.endpoint):
+          # Eindpunt
+          plt.plot([self.endpoint[0]], [self.endpoint[1]], 'yo')
+          plt.text(self.endpoint[0], self.endpoint[1] + 20, 'Eindpunt')
 
       plt.axis([-600, 600, -600, 600])
       plt.grid(True)

@@ -3,7 +3,6 @@ import math
 import sys
 import os
 import time
-import serial
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')

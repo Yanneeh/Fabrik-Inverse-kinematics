@@ -1,12 +1,14 @@
 # Fabrik inverse kinematics.
 
-## Functions
+## Installation
 
 Dowload zip, unzip and move module to project folder. Then import and done. __WARNING:__ module name may change in the future.
 
 ```python
 from fabrik import Arm
 ```
+
+## Functions
 
 The Fabrik class contains some functions that affect movement or visualize a process. This module is written in python.
 

@@ -100,91 +100,96 @@ class Arm:
   def calc2D(self, x, y):
     self.endpoint = np.array([x, y])
 
-    # Check of de afstand tussen het eindpunt en het beginpunt kleiner is dan de totale lengte van de arm.
-    if np.linalg.norm(self.beginpoint - self.endpoint) < self.armlengte:
+    if len(self.segments) > 1:
 
-        # Fabrik algoritme.
-        while np.linalg.norm(self.segments[-1].v - self.endpoint) > 0.1:
-            # Achteruit. EXPERIMENT: (Ik zou de lengte van -1 naar -2 kunnen veranderen).
-            for i in range(len(self.segments) - 1, 0, -1):
+        # Check of de afstand tussen het eindpunt en het beginpunt kleiner is dan de totale lengte van de arm.
+        if np.linalg.norm(self.beginpoint - self.endpoint) < self.armlengte:
 
-              # Op het uiteinde moeten we eerst het eindpunt gebruiken om de formule te kunnen toepassen.
+            # Fabrik algoritme.
+            while np.linalg.norm(self.segments[-1].v - self.endpoint) > 0.1:
+                # Achteruit. EXPERIMENT: (Ik zou de lengte van -1 naar -2 kunnen veranderen).
+                for i in range(len(self.segments) - 1, 0, -1):
 
-              # Kijk of de waarde van i gelijk is aan de index van de laatse vector aan de arm.
-              if i == len(self.segments) - 1:
-                # Ga nog een index lager naar de een na laatse vector in de list. Gebruik dan de formule met de eindvector en vermenigvuldig met de lengte van de vector met de laatste index.
-                vector = (unit(self.segments[i-1].v - self.endpoint) * self.segments[i].lengte) + self.endpoint
-                # print(vector)
+                  # Op het uiteinde moeten we eerst het eindpunt gebruiken om de formule te kunnen toepassen.
 
-                # Vervang oude vector met nieuwe vector.
-                self.segments[i-1].v = vector
-                # print(i-1)
+                  # Kijk of de waarde van i gelijk is aan de index van de laatse vector aan de arm.
+                  if i == len(self.segments) - 1:
+                    # Ga nog een index lager naar de een na laatse vector in de list. Gebruik dan de formule met de eindvector en vermenigvuldig met de lengte van de vector met de laatste index.
+                    vector = (unit(self.segments[i-1].v - self.endpoint) * self.segments[i].lengte) + self.endpoint
+                    # print(vector)
 
-                # plt.plot([vector[0]], [vector[1]], 'go')
-                # plt.text(vector[0], vector[1] + 1, 'Vector')
-              else:
-                vector = (unit(self.segments[i-1].v - self.segments[i].v) * self.segments[i].lengte) + self.segments[i].v
-                # print(vector)
-                # print(i-1)
+                    # Vervang oude vector met nieuwe vector.
+                    self.segments[i-1].v = vector
+                    # print(i-1)
 
-                self.segments[i-1].v = vector
+                    # plt.plot([vector[0]], [vector[1]], 'go')
+                    # plt.text(vector[0], vector[1] + 1, 'Vector')
+                  else:
+                    vector = (unit(self.segments[i-1].v - self.segments[i].v) * self.segments[i].lengte) + self.segments[i].v
+                    # print(vector)
+                    # print(i-1)
 
-                # plt.plot([vector[0]], [vector[1]], 'go')
-                # plt.text(vector[0], vector[1] + 1, 'Vector')
+                    self.segments[i-1].v = vector
 
-            # Vooruit.
+                    # plt.plot([vector[0]], [vector[1]], 'go')
+                    # plt.text(vector[0], vector[1] + 1, 'Vector')
+
+                # Vooruit.
+                for i in range(len(self.segments)):
+                  # print(i)
+                  if i == 0:
+                    vector = (unit(self.segments[i].v - self.beginpoint) * self.segments[i].lengte) + self.beginpoint
+                    # print(vector)
+
+                    self.segments[i].v = vector
+
+                    # plt.plot([vector[0]], [vector[1]], 'yo')
+                    # plt.text(vector[0], vector[1] + 1, 'Vector')
+
+                  elif i == len(self.segments) - 1:
+                    vector = (unit(self.segments[i-1].v - self.endpoint) * self.segments[i].lengte * -1) + self.segments[i-1].v
+                    # print(vector)
+
+                    self.segments[i].v = vector
+
+                    # plt.plot([vector[0]], [vector[1]], 'bo')
+                    # plt.text(vector[0], vector[1] + 1, 'Vector')
+                  else:
+                    vector = (unit(self.segments[i].v - self.segments[i-1].v) * self.segments[i].lengte) + self.segments[i-1].v
+                    # print(vector)
+
+                    self.segments[i].v = vector
+
+                    # plt.plot([vector[0]], [vector[1]], 'yo')
+                    # plt.text(vector[0], vector[1] + 1, 'Vector')
+
+            # Bereken nieuwe hoeken.
             for i in range(len(self.segments)):
-              # print(i)
-              if i == 0:
-                vector = (unit(self.segments[i].v - self.beginpoint) * self.segments[i].lengte) + self.beginpoint
-                # print(vector)
+                if i == 0:
+                  # Bereken de hoek tussen de eerste vector in de list en de x as.
+                  angle = getAngle(self.segments[i].v)
 
-                self.segments[i].v = vector
+                  print(angle)
 
-                # plt.plot([vector[0]], [vector[1]], 'yo')
-                # plt.text(vector[0], vector[1] + 1, 'Vector')
+                  # Update de hoek van deze vector.
+                  self.segments[i].angle = angle
+                else:
+                  # Reken de hoek tussen 2 vectoren uit. Gebruik hier de huidige en vorige index van de list.
+                  angleBeteenVector = angleBetween(self.segments[i].v, self.segments[i-1].v)
 
-              elif i == len(self.segments) - 1:
-                vector = (unit(self.segments[i-1].v - self.endpoint) * self.segments[i].lengte * -1) + self.segments[i-1].v
-                # print(vector)
+                  angle = math.degrees(math.asin( (np.linalg.norm(self.segments[i].v) * math.sin(math.radians(angleBeteenVector))) / self.segments[i].lengte))
 
-                self.segments[i].v = vector
+                  print(angle)
 
-                # plt.plot([vector[0]], [vector[1]], 'bo')
-                # plt.text(vector[0], vector[1] + 1, 'Vector')
-              else:
-                vector = (unit(self.segments[i].v - self.segments[i-1].v) * self.segments[i].lengte) + self.segments[i-1].v
-                # print(vector)
+                  # Update de hoek van deze vector.
+                  self.segments[i].angle = angle
 
-                self.segments[i].v = vector
-
-                # plt.plot([vector[0]], [vector[1]], 'yo')
-                # plt.text(vector[0], vector[1] + 1, 'Vector')
-
-        # Bereken nieuwe hoeken.
-        for i in range(len(self.segments)):
-            if i == 0:
-              # Bereken de hoek tussen de eerste vector in de list en de x as.
-              angle = getAngle(self.segments[i].v)
-
-              print(angle)
-
-              # Update de hoek van deze vector.
-              self.segments[i].angle = angle
-            else:
-              # Reken de hoek tussen 2 vectoren uit. Gebruik hier de huidige en vorige index van de list.
-              angleBeteenVector = angleBetween(self.segments[i].v, self.segments[i-1].v)
-
-              angle = math.degrees(math.asin( (np.linalg.norm(self.segments[i].v) * math.sin(math.radians(angleBeteenVector))) / self.segments[i].lengte))
-
-              print(angle)
-
-              # Update de hoek van deze vector.
-              self.segments[i].angle = angle
-
+        else:
+          print('Point too far...')
+          sys.exit()
     else:
-      print('Point too far...')
-      sys.exit()
+        print('Add segments first... A minimum of 2 segments is required.')
+        sys.exit()
 
   def calc3D(self, x, y, z):
     self.endpoint = np.array([x, y])

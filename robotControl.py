@@ -86,7 +86,7 @@ class Arm:
       # Maak een segment van de vector van de laatste segment, de nieuwe lengte en de nieuwe hoek.
 
       # Tel ook de parent angle erbij op voor realisme.
-      segment = Segment(arm.segments[-1].v[0], arm.segments[-1].v[1], length, angle + arm.segments[-1].angle)
+      segment = Segment(self.segments[-1].v[0], self.segments[-1].v[1], length, angle + self.segments[-1].angle)
     else:
 
       # Maak een segment van de vector beginpoint, lengte en hoek.

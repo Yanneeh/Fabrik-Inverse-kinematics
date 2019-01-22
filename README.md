@@ -2,6 +2,12 @@
 
 ## Functions
 
+Dowload zip, unzip and move module to project folder. Then import and done. __WARNING:__ module name may change in the future.
+
+```python
+from fabrik import Arm
+```
+
 The Fabrik class contains some functions that affect movement or visualize a process. This module is written in python.
 
 Define a new instance of the arm class.
@@ -28,4 +34,4 @@ For debugging and visualizing. This will open a 2D plot.
 arm.plt2D()
 ```
 
-__Full 3D support is coming soon!__ 
+__Full 3D support is coming soon!__

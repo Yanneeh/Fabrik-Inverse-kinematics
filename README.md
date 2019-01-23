@@ -2,7 +2,7 @@
 
 ## Installation
 
-Dowload zip, unzip and move module to project folder. Then import and done. __WARNING:__ module name may change in the future.
+Dowload zip, unzip and move module to project folder. Then import and done. __WARNING:__ module name may change in the future. This module is written in python.
 
 ```python
 from fabrik import Arm
@@ -10,7 +10,7 @@ from fabrik import Arm
 
 ## Functions
 
-The Fabrik class contains some functions that affect movement or visualize a process. This module is written in python.
+The Arm class contains some functions that affect movement or visualize a process. 
 
 Define a new instance of the arm class.
 

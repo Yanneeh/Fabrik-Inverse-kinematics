@@ -2,6 +2,11 @@
 
 ## Installation
 
+First, install dependencies.
+```
+pip install -r requirements.txt
+```
+
 Dowload zip, unzip and move module to project folder. Then import and done. __WARNING:__ module name may change in the future. This module is written in python.
 
 ```python
@@ -10,7 +15,7 @@ from fabrik import Arm
 
 ## Functions
 
-The Arm class contains some functions that affect movement or visualize a process. 
+The Arm class contains some functions that affect movement or visualize a process.
 
 Define a new instance of the arm class.
 

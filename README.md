@@ -17,7 +17,7 @@ from fabrik import Arm
 
 The Arm class contains some functions that affect movement or visualize a process.
 
-Define a new instance of the arm class.
+Create a new instance of the arm class.
 
 ```python
 arm = Arm()

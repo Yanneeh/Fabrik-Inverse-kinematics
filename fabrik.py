@@ -76,6 +76,9 @@ class Arm:
     # Het einpunt van de robot. Op dit moment leeg.
     self.endpoint = np.array([False, False])
 
+  def __del__(self):
+      print('Deleted object... \n')
+
   """ Voeg een nieuw segment toe aan de keten. Geef bij deze functie de lengte van de segment en welke hoek hij heeft. """
   def addSegment(self, length, angle):
 
@@ -192,6 +195,7 @@ class Arm:
         sys.exit()
 
   def calc3D(self, x, y, z):
+    # WARNING: DO NOT USE!!!
     self.endpoint = np.array([x, y])
 
     # Check of de afstand tussen het eindpunt en het beginpunt kleiner is dan de totale lengte van de arm.
@@ -274,12 +278,12 @@ class Arm:
               self.segments[i].angle = angle
 
         # Bereken de z-hoek van de robot.
-        zPos = np.array([self.segments[-1].v[0], z])
+        zPos = np.array([z, self.segments[-1].v[0]])
         zAngle = getAngle(zPos)
 
         self.zAngle = zAngle
 
-        print(zAngle)
+        # print(zAngle)
 
     else:
       print('Point too far...')
@@ -309,20 +313,22 @@ class Arm:
       plt.show(block=True)
 
   def plt3D(self):
+      # WARNING: DO NOT USE!
+
       # Plot in 3D.
       fig = plt.figure()
       ax1 = fig.add_subplot(111, projection="3d")
 
       # Plot arm.
       for segment in self.segments:
-          ax1.scatter(z, segment.v[0], segment.v[1], c='r')
+          ax1.scatter(self.z, segment.v[0], segment.v[1], c='r')
           # plt.text(segment.v[0], segment.v[1] + 1, '(x:{}, y:{})'.format(int(segment.v[0]), int(segment.v[1])))
 
       # Startpunt
-      ax1.scatter(z, self.beginpoint[0], self.beginpoint[1])
+      ax1.scatter(0, self.beginpoint[0], self.beginpoint[1])
 
       # Eindpunt
-      ax1.scatter(z, self.endpoint[0], self.endpoint[1], c='g')
+      ax1.scatter(self.z, self.endpoint[0], self.endpoint[1], c='g')
 
       ax1.set_xlabel('z-axis')
       ax1.set_ylabel('x-axis')
@@ -330,5 +336,13 @@ class Arm:
 
       plt.show()
 
-  def sendPoints():
-      pass
+  def getPoints(self):
+      points = []
+
+      for i in range(len(self.segments)):
+          points.append({
+            "x": self.segments[i].v[0],
+            "y": self.segments[i].v[1]
+          })
+
+      return points

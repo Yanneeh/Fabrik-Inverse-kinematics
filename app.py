@@ -4,13 +4,17 @@ import sys
 import serial
 from fabrik import Arm
 
-
 def restart():
-        print("argv was",sys.argv)
-        print("sys.executable was", sys.executable)
-        print("restart now")
+    try:
+        # print("argv was",sys.argv)
+        # print("sys.executable was", sys.executable)
         os.execv(sys.executable, ['python'] + sys.argv)
         print('System restart... \n')
+    except Exception as e:
+        print('System unable to restart. \n')
+        print('Error: ' + e)
+
+
 
 def angleString(arm):
     # List van posities. Deze posities worden later in één string aan elkaar geregen.
@@ -58,7 +62,7 @@ try:
     time.sleep(3)
 
     # Oneindige loop...
-    while True:
+    while True and ser.is_open:
         print('Making new arm... \n')
 
         arm = Arm()
@@ -84,7 +88,7 @@ try:
         print('move 3')
         move(arm)
 
-        arm.calc2D(100, 220)
+        arm.calc2D(20, 220)
         # arm.plt2D()
         arm.zAngle = 120
         print('move 4')
@@ -94,6 +98,12 @@ try:
         # arm.plt2D()
         arm.zAngle = 60
         print('move 5')
+        move(arm)
+
+        arm.calc2D(250, 30)
+        # arm.plt2D()
+        arm.zAngle = 140
+        print('move 6')
         move(arm)
 
         del arm

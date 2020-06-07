@@ -38,7 +38,7 @@ def getAngle(vector1, vector2=np.array([0, 0])):
   return angle
 
 class Segment:
-  """ Een onderdeel van de arm. """
+  """ Een deelstuk van een arm. """
   def __init__(self, x, y, lengte, angle):
 
     # Onthoudt de gegeven hoek.
@@ -58,7 +58,10 @@ class Segment:
     self.v = np.array([x + dx, y + dy])
 
 class Arm:
-  """ De eerste versie van de arm class. Aan de arm kunnen nieuwe segmenten worden toegevoegd. De arm moet ook naar een punt in ruimte kunnen bewegen. """
+  """ 
+    De eerste versie van de arm class. Aan de arm kunnen nieuwe segmenten worden toegevoegd. 
+    De arm kan ook naar een punt in ruimte bewegen. 
+  """
   def __init__(self, x=0, y=0):
 
     # Initialiseer beginpunt als vector.
@@ -76,8 +79,10 @@ class Arm:
     # Het einpunt van de robot. Op dit moment leeg.
     self.endpoint = np.array([False, False])
 
+    self.z = 0
+
   def __del__(self):
-      print('Deleted object... \n')
+    print('Deleted object... \n')
 
   """ Voeg een nieuw segment toe aan de keten. Geef bij deze functie de lengte van de segment en welke hoek hij heeft. """
   def addSegment(self, length, angle):

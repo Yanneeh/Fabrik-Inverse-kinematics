@@ -15,7 +15,7 @@ def unitVector(vector):
 class Segment2D:
 
     """ 
-        A part of the FabrikSolver2D to store segments of an inverse kinematics chain.
+        A part of the FabrikSolver2D to store a part of an inverse kinematics chain.
     """
 
     def __init__(self, referenceX, referenceY, length, angle):
@@ -36,8 +36,9 @@ class Segment2D:
         # Store new coördinates.
         self.point = np.array([newX, newY])
 
-class Segment3D:
-    pass
+    def setPoint(self, a, b, reference):
+        # TODO: add high level function for updating point.
+        pass
 
 class FabrikSolver2D:
     """ 
@@ -47,7 +48,7 @@ class FabrikSolver2D:
         """ 
             marginOfError -> the margin of error for the algorithm.
 
-            baseX -> x coördinate of the base.
+            baseX -> x component of the base.
 
             baseY -> y coördinate of the base.
 
@@ -85,6 +86,11 @@ class FabrikSolver2D:
         if np.linalg.norm(self.basePoint - np.array([targetX, targetY])) < self.armLength:
             return True
         return False
+    
+    def checkInMarginOfError(self, targetX, targetY):
+        if np.linalg.norm(self.segments[-1].point - np.array([targetX, targetY])) < self.marginOfError:
+            return True
+        return False
 
     def iterate(self, targetX, targetY):
         """ 
@@ -96,7 +102,7 @@ class FabrikSolver2D:
             Use in simulations or other systems who require motion that converges over time.  
         """
         
-        endPoint = np.array([targetX, targetY])
+        target = np.array([targetX, targetY])
 
         # Backwards.
         for i in range(len(self.segments) - 1, 0, -1):
@@ -108,7 +114,7 @@ class FabrikSolver2D:
                 # Ga nog een index lager naar de een na laatse vector in de list. Gebruik dan de formule met de eindvector en vermenigvuldig met de lengte van de vector met de laatste index.
 
                 # Vervang oude vector met nieuwe vector.
-                self.segments[i-1].point = (unitVector(self.segments[i-1].point - endPoint) * self.segments[i].length) + endPoint
+                self.segments[i-1].point = (unitVector(self.segments[i-1].point - target) * self.segments[i].length) + target
 
             else:
                 self.segments[i-1].point = (unitVector(self.segments[i-1].point - self.segments[i].point) * self.segments[i].length) + self.segments[i].point
@@ -119,7 +125,7 @@ class FabrikSolver2D:
                 self.segments[i].point = (unitVector(self.segments[i].point - self.basePoint) * self.segments[i].length) + self.basePoint
 
             elif i == len(self.segments) - 1:
-                self.segments[i].point = (unitVector(self.segments[i-1].point - endPoint) * self.segments[i].length * -1) + self.segments[i-1].point
+                self.segments[i].point = (unitVector(self.segments[i-1].point - target) * self.segments[i].length * -1) + self.segments[i-1].point
 
             else:
                 self.segments[i].point = (unitVector(self.segments[i].point - self.segments[i-1].point) * self.segments[i].length) + self.segments[i-1].point
@@ -130,14 +136,13 @@ class FabrikSolver2D:
         """
 
         if self.isReachable(targetX, targetY):
-            while np.linalg.norm(self.segments[-1].point - np.array([targetX, targetY])) > self.marginOfError:
-                self.iterate(targetX, targetY)
-                
+            while not self.checkInMarginOfError(targetX, targetY):
+                self.iterate(targetX, targetY)         
         else:
             print('Target not reachable.')
 
     
-    def plot(self, xMin=-300, xMax=300, yMin=-300, yMax=300, save=False, name="graph"):
+    def plot(self, save=False, name="graph", xMin=-300, xMax=300, yMin=-300, yMax=300):
         
         # Plot arm.
         for i in range(len(self.segments)):
@@ -159,18 +164,147 @@ class FabrikSolver2D:
 
         plt.show(block=True)
 
+class Segment3D:
+    """ 
+        A part of the FabrikSolver3D to store a part of an inverse kinematics chain.
+    """
+
+    def __init__(self, referenceX, referenceY, referenceZ, length, xAngle, yAngle):
+
+        self.xAngle = xAngle
+        self.yAngle = yAngle
+
+        # Store the length of the segment.
+        self.length = length
+
+        # Calculate new coördinates.
+        deltaX = math.cos(math.radians(xAngle)) * length
+        deltaY = math.sin(math.radians(xAngle)) * length
+        deltaZ = math.sin(math.radians(yAngle)) * length
+
+        # Calculate new coördinates with respect to reference.
+        newX = referenceX + deltaX
+        newY = referenceY + deltaY
+        newZ = referenceZ + deltaZ
+
+        # Store new coördinates.
+        self.point = np.array([newX, newY, newZ])
+
 class FabrikSolver3D:
     """ 
         An inverse kinematics solver in 3D. Uses the Fabrik Algorithm.
     """
     def __init__(self, marginOfError=0.01, baseX=0, baseY=0, baseZ=0):
-        pass
+        """ 
+            marginOfError -> the margin of error for the algorithm.
+
+            baseX -> x component of the base.
+
+            baseY -> y coördinate of the base.
+
+            Create the base of the chain.
+            Initialize empty segment array -> [].
+            Initialize length of the chain -> 0.
+        """
+
+        self.basePoint = np.array([baseX, baseY, baseZ])
+        self.segments = []
+        self.armLength = 0
+        self.marginOfError = marginOfError
+
+    def addSegment(self, length, xAngle, yAngle):
+        if len(self.segments) > 0:
+
+            segment = Segment3D(self.segments[-1].point[0], self.segments[-1].point[1], self.segments[-1].point[2], length, xAngle + self.segments[-1].xAngle, self.segments[-1].yAngle + yAngle)
+        else:
+            # Maak een segment van de vector beginpoint, lengte en hoek.
+            segment = Segment3D(self.basePoint[0], self.basePoint[1], self.basePoint[2], length, xAngle, yAngle)
+
+        # Voeg lengte toe aan de totale armlengte.
+        self.armLength += segment.length
+
+        # Voeg de nieuwe segment toe aan de list.
+        self.segments.append(segment)
+
+    def isReachable(self, targetX, targetY, targetZ):
+        """
+            Check if a target endpoint is reachable by the end effector. 
+        """
+
+        if np.linalg.norm(self.basePoint - np.array([targetX, targetY, targetZ])) < self.armLength:
+            return True
+        return False
+
+    def checkInMarginOfError(self, targetX, targetY, targetZ):
+        if np.linalg.norm(self.segments[-1].point - np.array([targetX, targetY, targetZ])) < self.marginOfError:
+            return True
+        return False     
 
     def iterate(self, targetX, targetY, targetZ):
-        pass
+        """ 
+            targetX -> the target x coördinate to move to.
+            
+            targetY -> the target x coördinate to move to.
+
+            Do one iteration of the fabrik algorithm. Used in the compute function. 
+            Use in simulations or other systems who require motion that converges over time.  
+        """
+
+        target = np.array([targetX, targetY, targetZ])
+
+        # Backwards.
+        for i in range(len(self.segments) - 1, 0, -1):
+
+            # Op het uiteinde moeten we eerst het eindpunt gebruiken om de formule te kunnen toepassen.
+
+            # Kijk of de waarde van i gelijk is aan de index van de laatse vector aan de arm.
+            if i == len(self.segments) - 1:
+                # Ga nog een index lager naar de een na laatse vector in de list. Gebruik dan de formule met de eindvector en vermenigvuldig met de lengte van de vector met de laatste index.
+
+                # Vervang oude vector met nieuwe vector.
+                self.segments[i-1].point = (unitVector(self.segments[i-1].point - target) * self.segments[i].length) + target
+
+            else:
+                self.segments[i-1].point = (unitVector(self.segments[i-1].point - self.segments[i].point) * self.segments[i].length) + self.segments[i].point
+
+         # Forwards.
+        for i in range(len(self.segments)):
+            if i == 0:
+                self.segments[i].point = (unitVector(self.segments[i].point - self.basePoint) * self.segments[i].length) + self.basePoint
+
+            elif i == len(self.segments) - 1:
+                self.segments[i].point = (unitVector(self.segments[i-1].point - target) * self.segments[i].length * -1) + self.segments[i-1].point
+
+            else:
+                self.segments[i].point = (unitVector(self.segments[i].point - self.segments[i-1].point) * self.segments[i].length) + self.segments[i-1].point
 
     def compute(self, targetX, targetY, targetZ):
-        pass
 
-    def plot(self):
-        pass
+        """  
+            Iterate the fabrik algoritm until the distance to the target is within the margin of error. 
+        """
+        
+        if self.isReachable(targetX, targetY, targetZ):
+            while not self.checkInMarginOfError(targetX, targetY, targetZ):
+                self.iterate(targetX, targetY, targetZ)         
+        else:
+            print('Target not reachable.')
+            sys.exit()
+
+    def plot(self, save=False, name="graph"):
+        fig = plt.figure()
+        ax1 = fig.add_subplot(111, projection="3d")
+
+        # Plot arm.
+        for segment in self.segments:
+            ax1.scatter(segment.point[2], segment.point[0], segment.point[1], c='r')
+            # plt.text(segment.v[0], segment.v[1] + 1, '(x:{}, y:{})'.format(int(segment.v[0]), int(segment.v[1])))
+
+        # Startpunt
+        ax1.scatter(self.basePoint[2], self.basePoint[0], self.basePoint[1])
+
+        ax1.set_xlabel('z-axis')
+        ax1.set_ylabel('x-axis')
+        ax1.set_zlabel('y-axis')
+
+        plt.show()

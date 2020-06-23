@@ -44,7 +44,7 @@ class FabrikSolver2D:
     """ 
         An inverse kinematics solver in 2D. Uses the Fabrik Algorithm.
     """
-    def __init__(self, marginOfError=0.01, baseX=0, baseY=0):
+    def __init__(self, baseX=0, baseY=0, marginOfError=0.01):
         """ 
             marginOfError -> the margin of error for the algorithm.
 
@@ -87,7 +87,7 @@ class FabrikSolver2D:
             return True
         return False
     
-    def checkInMarginOfError(self, targetX, targetY):
+    def inMarginOfError(self, targetX, targetY):
         if np.linalg.norm(self.segments[-1].point - np.array([targetX, targetY])) < self.marginOfError:
             return True
         return False
@@ -136,7 +136,7 @@ class FabrikSolver2D:
         """
 
         if self.isReachable(targetX, targetY):
-            while not self.checkInMarginOfError(targetX, targetY):
+            while not self.inMarginOfError(targetX, targetY):
                 self.iterate(targetX, targetY)         
         else:
             print('Target not reachable.')
@@ -194,7 +194,7 @@ class FabrikSolver3D:
     """ 
         An inverse kinematics solver in 3D. Uses the Fabrik Algorithm.
     """
-    def __init__(self, marginOfError=0.01, baseX=0, baseY=0, baseZ=0):
+    def __init__(self, baseX=0, baseY=0, baseZ=0,  marginOfError=0.01):
         """ 
             marginOfError -> the margin of error for the algorithm.
 
@@ -212,6 +212,7 @@ class FabrikSolver3D:
         self.armLength = 0
         self.marginOfError = marginOfError
 
+    # FIXME: change xAngle to zAngle.
     def addSegment(self, length, xAngle, yAngle):
         if len(self.segments) > 0:
 
@@ -235,7 +236,7 @@ class FabrikSolver3D:
             return True
         return False
 
-    def checkInMarginOfError(self, targetX, targetY, targetZ):
+    def inMarginOfError(self, targetX, targetY, targetZ):
         if np.linalg.norm(self.segments[-1].point - np.array([targetX, targetY, targetZ])) < self.marginOfError:
             return True
         return False     
@@ -285,7 +286,7 @@ class FabrikSolver3D:
         """
         
         if self.isReachable(targetX, targetY, targetZ):
-            while not self.checkInMarginOfError(targetX, targetY, targetZ):
+            while not self.inMarginOfError(targetX, targetY, targetZ):
                 self.iterate(targetX, targetY, targetZ)         
         else:
             print('Target not reachable.')

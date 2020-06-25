@@ -46,20 +46,23 @@ class FabrikSolver2D:
     """
     def __init__(self, baseX=0, baseY=0, marginOfError=0.01):
         """ 
-            marginOfError -> the margin of error for the algorithm.
-
             baseX -> x component of the base.
 
             baseY -> y coördinate of the base.
 
-            Create the base of the chain.
-            Initialize empty segment array -> [].
-            Initialize length of the chain -> 0.
+            marginOfError -> the margin of error for the algorithm.
         """
 
+        # Create the base of the chain.
         self.basePoint = np.array([baseX, baseY])
+
+        # Initialize empty segment array -> [].
         self.segments = []
+
+        # Initialize length of the chain -> 0.
         self.armLength = 0
+
+        # Initialize the margin of error.
         self.marginOfError = marginOfError
 
     def addSegment(self, length, angle):
@@ -282,6 +285,12 @@ class FabrikSolver3D:
     def compute(self, targetX, targetY, targetZ):
 
         """  
+            targetX -> the target x coördinate to move to.
+            
+            targetY -> the target x coördinate to move to.
+
+            targetZ -> the target z coördinate to move to. 
+
             Iterate the fabrik algoritm until the distance to the target is within the margin of error. 
         """
         

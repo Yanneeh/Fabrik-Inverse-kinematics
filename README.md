@@ -17,6 +17,14 @@ Then import the classes and done.
 from fabrikSolver import FabrikSolver2D, FabrikSolver3D
 ```
 
+## Docs
+
+To see the full documentation. Execute the *docs* file.
+
+```
+sh docs.sh
+```
+
 ## Quickstart
 
 Create a new instance of a fabrik solver class in 2D.
@@ -33,7 +41,7 @@ arm.addSegment(150 , 90)
 arm.addSegment(80 , 20)
 ```
 
-Move the end effector of the arm to a new x, y coördinate instantly. (within the margin of error)
+Move the end effector of the arm to a new x, y coördinate instantly.
 
 ```python
 arm.compute(300, 100)

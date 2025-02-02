@@ -1,3 +1,5 @@
+**Tested on python3.11**
+
 # Fabrik inverse kinematics.
 
 A very small and flexible implementation of the Fabrik algorithm. Useful for animation, robotics or other optimization problems.

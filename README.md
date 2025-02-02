@@ -186,4 +186,4 @@ arm.plot(save=False, name="graph")
     * c++
     * c
 * Serial connection to support robotic arms and other systems driven by an embedded system. Arduino, etc.
-* Quaternions for rotations because they are awesome.
+* Robotic Quaternions for rotations to control robots.

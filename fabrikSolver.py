@@ -3,7 +3,6 @@ import math
 import sys
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-plt.style.use('seaborn-whitegrid')
 from mpl_toolkits.mplot3d import axes3d
 
 def unitVector(vector):

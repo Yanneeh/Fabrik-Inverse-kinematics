@@ -178,7 +178,7 @@ With some optional parameters. Set save to true to save the plot to a png file. 
 arm.plot(save=False, name="graph")
 ```
 
-## Future Roadmap (for others to implement)
+## Future Possible Roadmap
 
 * Support for more languages:
     * Javascript
